@@ -1,0 +1,17 @@
+﻿body {
+    /*background-color: black;*/
+}
+
+.img {
+    height: 500px;
+}
+
+
+.text-slide {
+    background: rgba(42, 42, 42, 0.7);
+    border: 2px solid black;
+    color: rgb(254, 254, 254, 0.8);
+    font: bold;
+    box-shadow: 4px 0px 10px rgba(93, 109, 151, 0.1);
+    transform: rotate(0.19deg);
+}

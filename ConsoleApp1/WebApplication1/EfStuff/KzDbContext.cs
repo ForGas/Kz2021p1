@@ -8,6 +8,7 @@ using WebApplication1.Models;
 using WebApplication1.EfStuff.Model.Firemen;
 using WebApplication1.EfStuff.Model.Airport;
 using WebApplication1.EfStuff.Model.Television;
+using WebApplication1.EfStuff.Model.Energy;
 
 namespace WebApplication1.EfStuff
 {
@@ -51,6 +52,11 @@ namespace WebApplication1.EfStuff
         public DbSet<TvChannel> TvChannels { get; set; }
         public DbSet<TvCelebrity> TvCelebrities { get; set; }
         public DbSet<TvProgrammeCelebrity> TvProgrammeCelebrities { get; set; }
+        public DbSet<PersonalAccount> PersonalAccounts { get; set; }
+        public DbSet<Building> Buildings { get; set; }
+        public DbSet<ElectricBill> ElectricBills { get; set; }
+        public DbSet<District> Districts { get; set; }
+        public DbSet<ElectricityMeter> ElectricityMeters { get; set; }
 
         public KzDbContext(DbContextOptions options) : base(options) { }
 
@@ -66,7 +72,7 @@ namespace WebApplication1.EfStuff
                .HasForeignKey<Fireman>(x => x.CitizenId);
             modelBuilder.Entity<FireTruck>()
                 .HasOne(x => x.FiremanTeam)
-                .WithOne(x => x.FireTruck);               
+                .WithOne(x => x.FireTruck);
             modelBuilder.Entity<Fireman>()
                 .HasOne(x => x.FiremanTeam)
                 .WithMany(x => x.Firemen);
@@ -121,7 +127,7 @@ namespace WebApplication1.EfStuff
             modelBuilder.Entity<Citizen>()
                 .HasMany(pc => pc.PoliceCallHistories)
                 .WithOne(c => c.Citizen);
-            
+
             modelBuilder.Entity<Citizen>()
                 .HasMany(pc => pc.Candidates)
                 .WithOne(c => c.Citizen);
@@ -219,6 +225,44 @@ namespace WebApplication1.EfStuff
             modelBuilder.Entity<TvProgrammeCelebrity>()
               .HasOne(x => x.Programme)
               .WithMany(x => x.Celebrities);
+
+
+            modelBuilder.Entity<Building>()
+                .HasOne(b => b.Adress)
+                .WithOne(a => a.Building)
+                .HasForeignKey<Building>(b => b.AdressId);
+
+            modelBuilder.Entity<Building>()
+                .HasOne(b => b.District)
+                .WithMany(d => d.Buildings);
+
+            modelBuilder.Entity<Building>()
+                .HasOne(b => b.ElectricBill)
+                .WithOne(e => e.Building)
+            .HasForeignKey<Building>(b => b.ElectricBillId);
+
+            modelBuilder.Entity<ElectricityMeter>()
+                .HasOne(em => em.ElectricBill)
+                .WithMany(eb => eb.ElectricityMeters);
+
+            modelBuilder.Entity<ElectricityMeter>()
+                     .HasIndex(e => e.SerialNumber)
+                     .IsUnique();
+
+            modelBuilder.Entity<PersonalAccount>()
+               .HasOne(p => p.Meter)
+               .WithOne(e => e.Account)
+               .HasForeignKey<PersonalAccount>(p => p.ElectricityMeterId);
+
+            modelBuilder.Entity<PersonalAccount>()
+              .HasOne(p => p.Tariff)
+              .WithOne(t => t.Account)
+              .HasForeignKey<PersonalAccount>(p => p.TariffId);
+
+            modelBuilder.Entity<PersonalAccount>()
+             .HasOne(p => p.Citizen)
+             .WithMany(c => c.PersonalAccounts);
+
 
             base.OnModelCreating(modelBuilder);
         }

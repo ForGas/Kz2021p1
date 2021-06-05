@@ -1,0 +1,24 @@
+﻿@using WebApplication1.EfStuff.Model.Energy
+@using WebApplication1.Models.Energy
+
+@model PersonalAccountViewModel
+
+<section class="container-xxl">
+    <h1 class="text-center">Страница с регистрацией лицевого счета по электричеству</h1>
+
+    <div>
+
+        <h3 class="text-center">Заявление на заключения договора энергоснабжения</h3>
+
+
+        <p>
+            Я @Model.UserName прошу Вас заключить договор энергоснабжения для
+            @Html.DropDownListFor(x => x.Person, new SelectList(Enum.GetValues(typeof(WebApplication1.EfStuff.Model.Energy.Person)))) лица
+        </p>
+        <p>
+            на ________объект расположенный по адресу ____________________
+        </p> 
+            
+    </div>
+</section>
+

@@ -1,0 +1,46 @@
+﻿@using WebApplication1.Models.Energy
+
+@model BuildingViewModel
+
+<section class="container-xxl">
+    
+    <h1 class="text-center">
+        Страница с регистрацией здания прекрасного города
+    </h1>
+
+
+    <form action="@Url.Action("AddBuilding", "Building")" method="post">
+        <div class="form-group">
+            Нумерация дома или здания: @Html.TextBoxFor(x => x.HouseNumber, new { Class = "form-control" })
+        </div>
+
+        <div class="form-group">
+            Район: @Html.TextBoxFor(x => x.DistrictName, new { Class = "form-control" })
+        </div>
+
+        <div class="form-group">
+            Улица: @Html.TextBoxFor(x => x.Street, new { Class = "form-control" })
+        </div>
+
+        <div class="form-group">
+            Этажность: @Html.TextBoxFor(x => x.FloorCount, new { Class = "form-control" })
+        </div>
+
+        <div class="form-group">
+            Общая площадь: @Html.TextBoxFor(x => x.TotalArea, new { Class = "form-control" })
+        </div>
+
+        <div class="form-group">
+            Общая задолжность по электроэнергии: @Html.TextBoxFor(x => x.TotalDebt, new { Class = "form-control" })
+        </div>
+
+        <div class="form-group">
+            Расход по электроэнергии в кв/ч: @Html.TextBoxFor(x => x.Consumption, new { Class = "form-control" })
+        </div>
+
+        <div class="form-group">
+            <input type="submit" class="btn btn-primary" value="Регистрация здания" />
+        </div>
+    </form>
+
+</section>

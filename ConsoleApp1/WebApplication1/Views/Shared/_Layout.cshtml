@@ -250,6 +250,31 @@
                         </ul>
                     </li>
 
+                    <li class="nav-item dropdown">
+                        <a class="dropdown-toggle nav-link"
+                           href="@Url.Action("Index", "Energy")">Energy</a>
+
+                        <ul class="dropdown-menu" role="menu">
+                            <li>
+                                <a class="dropdown-item nav-link text-dark"
+                                   href="@Url.Action("Index", "PersonalAccount")">Лицевой счет</a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item nav-link text-dark"
+                                   href="@Url.Action("Registration", "PersonalAccount")">Регистрация</a>
+                            </li>
+                            <li class="dropdown-divider"></li>
+                            <li>
+                                <a class="dropdown-item nav-link text-dark"
+                                   href="@Url.Action("Index", "Building")">Районы</a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item nav-link text-dark"
+                                   href="@Url.Action("AddBuilding", "Building")">Добавить здание</a>
+                            </li>
+                        </ul>
+                    </li>
+
                     @if (userService.IsTvStaff())
                     {
                         <li class="nav-item">

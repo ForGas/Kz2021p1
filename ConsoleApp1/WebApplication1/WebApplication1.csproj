@@ -16,6 +16,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="EfStuff\Model\Energy\" />
+    <Folder Include="Models\Energy\" />
+    <Folder Include="Views\Energy\" />
     <Folder Include="wwwroot\Image\avatars\" />
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="8.1.1" />
     <PackageReference Include="Azure.Storage.Blobs" Version="12.8.1" />

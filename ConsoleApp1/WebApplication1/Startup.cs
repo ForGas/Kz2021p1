@@ -11,6 +11,7 @@ using System.Linq;
 using System.Reflection;
 using WebApplication1.EfStuff;
 using WebApplication1.EfStuff.Model;
+using WebApplication1.EfStuff.Model.Energy;
 using WebApplication1.EfStuff.Model.Firemen;
 using WebApplication1.EfStuff.Model.Television;
 using WebApplication1.EfStuff.Repositoryies;
@@ -19,6 +20,7 @@ using WebApplication1.EfStuff.Repositoryies.Television;
 using WebApplication1.Extensions;
 using WebApplication1.Models;
 using WebApplication1.Models.Education;
+using WebApplication1.Models.Energy;
 using WebApplication1.Models.FiremanModels;
 using WebApplication1.Models.Television;
 using WebApplication1.Presentation;
@@ -55,7 +57,7 @@ namespace WebApplication1
                 new BlobServiceClient(Configuration.GetValue<string>("AzureBlobStorageConnectionString")));
 
             var connectionString = Configuration.GetValue<string>("SpecialConnectionStrings");
-            services.AddDbContext<KzDbContext>(option =>  option.UseSqlServer(connectionString));
+            services.AddDbContext<KzDbContext>(option => option.UseSqlServer(connectionString));
 
             RegisterRepositories(services);
             services.AddPoliceServices(Configuration);
@@ -222,7 +224,7 @@ namespace WebApplication1
             configurationExp.CreateMap<FireIncidentViewModel, FireIncident>();
 
             MapBothSide<FireTruck, FireTruckViewModel>(configurationExp);
-            configurationExp.AddProfile<AirportProfiles>();             
+            configurationExp.AddProfile<AirportProfiles>();
             MapBothSide<Citizen, FullProfileViewModel>(configurationExp);
             MapBothSide<Bus, BusParkViewModel>(configurationExp);
             MapBothSide<Order, OrderViewModel>(configurationExp);
@@ -261,6 +263,35 @@ namespace WebApplication1
             MapBothSide<TvSchedule, TvScheduleViewModel>(configurationExp);
             MapBothSide<TvProgrammeStaff, TvProgrammeStaffViewModel>(configurationExp);
             MapBothSide<TvProgrammeCelebrity, TvProgrammeCelebrityViewModel>(configurationExp);
+
+
+            configurationExp.CreateMap<Building, BuildingViewModel>()
+                .ForMember(x => x.Id, opt => opt.MapFrom(b => b.Id))
+                .ForMember(x => x.Consumption, opt => opt.MapFrom(b => b.ElectricBill.Consumption))
+                .ForMember(x => x.Street, opt => opt.MapFrom(b => b.Adress.Street))
+                .ForMember(x => x.FloorCount, opt => opt.MapFrom(b => b.Adress.FloorCount))
+                .ForMember(x => x.HouseNumber, opt => opt.MapFrom(b => b.Adress.HouseNumber))
+                .ForMember(x => x.DistrictName, opt => opt.MapFrom(b => b.District.Name))
+                .ReverseMap()
+                .ForMember(x => x.Id, opt => opt.MapFrom(b => b.Id))
+                .ForMember(x => x.TotalArea, opt => opt.MapFrom(b => b.TotalArea))
+                .ForMember(x => x.Adress, opt => opt.MapFrom(b => new Adress()
+                {
+                    FloorCount = b.FloorCount,
+                    HouseNumber = b.HouseNumber,
+                    Street = b.Street,
+                }))
+                .ForMember(x => x.District, opt => opt.MapFrom(b => new District()
+                {
+                    Name = b.DistrictName,
+                }))
+                .ForMember(x => x.ElectricBill, opt => opt.MapFrom(b => new ElectricBill()
+                {
+                    TotalDebt = b.TotalDebt,
+                    Consumption = b.Consumption
+                }));
+
+            MapBothSide<PersonalAccount, PersonalAccountViewModel>(configurationExp);
 
             var config = new MapperConfiguration(configurationExp);
             var mapper = new Mapper(config);

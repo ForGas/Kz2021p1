@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using WebApplication1.EfStuff.Model.Energy;
 
 namespace WebApplication1.EfStuff.Model
 {
@@ -12,5 +13,6 @@ namespace WebApplication1.EfStuff.Model
         public int FloorCount { get; set; }
 
         public virtual List<Citizen> Citizens { get; set; }
+        public virtual Building Building { get; set; }
     }
 }

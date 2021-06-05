@@ -4,6 +4,7 @@ using System.Text.Json.Serialization;
 using WebApplication1.EfStuff.Model.Firemen;
 using WebApplication1.EfStuff.Model.Airport;
 using WebApplication1.EfStuff.Model.Television;
+using WebApplication1.EfStuff.Model.Energy;
 
 namespace WebApplication1.EfStuff.Model
 {
@@ -37,6 +38,8 @@ namespace WebApplication1.EfStuff.Model
 
         public virtual TvStaff TvStaff { get; set; }
         public virtual TvCelebrity TvCelebrity { get; set; }
+
+        public virtual ICollection<PersonalAccount> PersonalAccounts { get; set; }
     }
 }
 
