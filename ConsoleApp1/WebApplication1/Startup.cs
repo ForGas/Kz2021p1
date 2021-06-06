@@ -264,34 +264,8 @@ namespace WebApplication1
             MapBothSide<TvProgrammeStaff, TvProgrammeStaffViewModel>(configurationExp);
             MapBothSide<TvProgrammeCelebrity, TvProgrammeCelebrityViewModel>(configurationExp);
 
-
-            configurationExp.CreateMap<Building, BuildingViewModel>()
-                .ForMember(x => x.Id, opt => opt.MapFrom(b => b.Id))
-                .ForMember(x => x.Consumption, opt => opt.MapFrom(b => b.ElectricBill.Consumption))
-                .ForMember(x => x.Street, opt => opt.MapFrom(b => b.Adress.Street))
-                .ForMember(x => x.FloorCount, opt => opt.MapFrom(b => b.Adress.FloorCount))
-                .ForMember(x => x.HouseNumber, opt => opt.MapFrom(b => b.Adress.HouseNumber))
-                .ForMember(x => x.DistrictName, opt => opt.MapFrom(b => b.District.Name))
-                .ReverseMap()
-                .ForMember(x => x.Id, opt => opt.MapFrom(b => b.Id))
-                .ForMember(x => x.TotalArea, opt => opt.MapFrom(b => b.TotalArea))
-                .ForMember(x => x.Adress, opt => opt.MapFrom(b => new Adress()
-                {
-                    FloorCount = b.FloorCount,
-                    HouseNumber = b.HouseNumber,
-                    Street = b.Street,
-                }))
-                .ForMember(x => x.District, opt => opt.MapFrom(b => new District()
-                {
-                    Name = b.DistrictName,
-                }))
-                .ForMember(x => x.ElectricBill, opt => opt.MapFrom(b => new ElectricBill()
-                {
-                    TotalDebt = b.TotalDebt,
-                    Consumption = b.Consumption
-                }));
-
-            MapBothSide<PersonalAccount, PersonalAccountViewModel>(configurationExp);
+            configurationExp.AddProfile<BuildingProfiles>();
+            configurationExp.AddProfile<PersonalAccountProfiles>();
 
             var config = new MapperConfiguration(configurationExp);
             var mapper = new Mapper(config);

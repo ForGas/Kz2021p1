@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WebApplication1.EfStuff.Repositoryies.Energy.Intrefaces;
 using WebApplication1.Services;
@@ -18,6 +19,7 @@ namespace WebApplication1.Controllers.Energy
 
         // GET: Energy/Index
         [HttpGet]
+        [Authorize]
         public IActionResult Index()
         {
             ViewData["userName"] = _userService.GetUser().Name;

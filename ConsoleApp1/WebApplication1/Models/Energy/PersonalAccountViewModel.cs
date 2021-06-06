@@ -12,9 +12,17 @@ namespace WebApplication1.Models.Energy
     {
         public long Id { get; set; }
 
+        public long TariffId { get; set; }
+
+        public long CitizenId { get; set; }
+
+        public long ElectricityMeterId { get; set; }
+
         public string UserName { get; set; }
 
-        public int Number { get; set; }
+        public string Address { get; set; }
+
+        public string Number { get; set; }
 
         public Rate Rate { get; set; }
 

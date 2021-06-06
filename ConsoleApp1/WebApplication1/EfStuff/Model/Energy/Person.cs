@@ -9,7 +9,10 @@ namespace WebApplication1.EfStuff.Model.Energy
 {
     public enum Person
     {
+        [Display(Name = "Физическое")]
         Natural = 1,
+
+        [Display(Name = "Юридическое")]
         Juridical = 2
     }
 }

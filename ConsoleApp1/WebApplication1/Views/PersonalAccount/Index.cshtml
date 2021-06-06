@@ -1,1 +1,25 @@
-﻿Index
+﻿@using WebApplication1.Models.Energy
+
+@model PersonalAccountViewModel
+
+
+<section>
+    <p>@Model.UserName</p>
+
+    <p>Лицевой счёт @Model.Number</p>
+
+    <p>Баланс лицевого счета: @Model.Debt</p>
+
+    <p>Тарифный план: @Model.Rate      Адрес подключения: @Model.Address</p>
+
+    <div>
+        <p>Сумма к оплате:</p>
+
+        <button>Оплатить</button>
+    </div>
+
+
+    <div>
+        Подать заявку на отключение счета
+    </div>
+</section>

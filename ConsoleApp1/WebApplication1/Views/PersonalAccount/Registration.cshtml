@@ -1,24 +1,56 @@
 ﻿@using WebApplication1.EfStuff.Model.Energy
 @using WebApplication1.Models.Energy
+@inject WebApplication1.EfStuff.Repositoryies.Energy.Intrefaces.IBuildingRepository repository
 
 @model PersonalAccountViewModel
 
+@section Style{
+    <link href="~/css/energy/registration.css" rel="stylesheet" />
+}
+
 <section class="container-xxl">
-    <h1 class="text-center">Страница с регистрацией лицевого счета по электричеству</h1>
+    <h1 class="text-center font-monospace text-decoration-underline">Регистрация лицевого счета по электричеству</h1>
 
-    <div>
+    @*form-control col-md-4*@
+ 
+    <div class="contract">
+        <div>
+            <h3 class="text-center font-monospace">Заявление на заключения договора энергоснабжения</h3>
 
-        <h3 class="text-center">Заявление на заключения договора энергоснабжения</h3>
+            <form action="@Url.Action("Registration", "PersonalAccount")" method="post">
 
+                @Html.Hidden("CitizenId", Model.CitizenId)
+                @Html.Hidden("UserName", Model.UserName)
+                @Html.Hidden("DateRegistration", Model.DateRegistration)
 
-        <p>
-            Я @Model.UserName прошу Вас заключить договор энергоснабжения для
-            @Html.DropDownListFor(x => x.Person, new SelectList(Enum.GetValues(typeof(WebApplication1.EfStuff.Model.Energy.Person)))) лица
-        </p>
-        <p>
-            на ________объект расположенный по адресу ____________________
-        </p> 
-            
+                <p class="fs-5 fw-light font-monospace">
+                    Я @Model.UserName прошу Вас заключить договор энергоснабжения для
+                    @Html.DropDownListFor(x => x.Person,
+                   new SelectList(Enum.GetValues(typeof(WebApplication1.EfStuff.Model.Energy.Person))),
+                   new { @class = "btn btn-default dropdown-toggle fs-5 font-monospace" })  лица
+                </p>
+                <p class="fs-5 fw-light font-monospace">
+                    На объект расположенный по адресу
+                    @Html.DropDownListFor(x => x.Address,
+                       new SelectList(repository.GetAll().Select(x => x.Adress.Street)),
+                       new { @class = "btn btn-default dropdown-toggle fs-5 font-monospace" })
+                </p>
+                <p class="fs-5 fw-light font-monospace">
+                    C тарифной ставкой
+                    @Html.DropDownListFor(x => x.Rate,
+                        new SelectList(Enum.GetValues(typeof(Rate))),
+                        new { @class = "btn btn-default dropdown-toggle fs-5 font-monospace" })
+                </p>
+
+                <div class="signature">
+                    <p class="text-end font-monospace">Дата заключения договора: @Model.DateRegistration</p>
+
+                    <div class="form-group d-flex justify-content-end">
+                        <input type="submit" class="btn btn-primary" value="Заключить договор" />
+                    </div>
+                </div>
+            </form>
+        </div> 
     </div>
 </section>
 

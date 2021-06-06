@@ -7,9 +7,11 @@ namespace WebApplication1.EfStuff.Model.Energy
 {
     public class PersonalAccount : BaseModel
     {
-        public int Number { get; set; }
+        public string Number { get; set; }
 
         public DateTime DateRegistration { get; set; }
+
+        public DateTime DateLastPayment { get; set; }
 
         public long TariffId { get; set; }
 

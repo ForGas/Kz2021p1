@@ -1,0 +1,16 @@
+﻿body {
+    background: #F9F9F9;
+}
+
+.contract {
+
+    margin-top: 30px;
+    padding: 20px 30px 40px 50px;
+    background-color: #fbfbfb;
+    box-shadow: 4px 0px 9px rgba(93, 109, 151, 0.1);
+    transform: rotate(0.19deg);
+}
+
+.signature {
+    margin-top: 100px;
+}
