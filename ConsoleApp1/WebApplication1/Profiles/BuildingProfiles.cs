@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using AutoMapper;
+﻿using AutoMapper;
 using WebApplication1.EfStuff.Model;
 using WebApplication1.EfStuff.Model.Energy;
 using WebApplication1.Models.Energy;
@@ -20,6 +16,7 @@ namespace WebApplication1.Profiles
                 .ForMember(x => x.FloorCount, opt => opt.MapFrom(b => b.Adress.FloorCount))
                 .ForMember(x => x.HouseNumber, opt => opt.MapFrom(b => b.Adress.HouseNumber))
                 .ForMember(x => x.DistrictName, opt => opt.MapFrom(b => b.District.Name))
+                .ForMember(x => x.TotalDebt, opt => opt.MapFrom(b => b.ElectricBill.TotalDebt))
                 .ReverseMap()
                 .ForMember(x => x.Id, opt => opt.MapFrom(b => b.Id))
                 .ForMember(x => x.TotalArea, opt => opt.MapFrom(b => b.TotalArea))
