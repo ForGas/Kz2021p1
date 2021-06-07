@@ -8,8 +8,8 @@ namespace WebApplication1.Controllers.Energy
 {
     public class EnergyController : Controller
     {
-        private IUserService _userService { get; set; }
-        private IMapper _mapper { get; set; }
+        private IMapper _mapper;
+        private IUserService _userService;
 
         public EnergyController(IMapper mapper, IUserService userService, IBuildingRepository buildingRepository)
         {

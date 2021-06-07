@@ -15,8 +15,8 @@ namespace WebApplication1.Controllers.Energy
     [ApiController]
     public class BuildingApiController : ControllerBase
     {
-        private IMapper _mapper { get; set; }
-        private IBuildingRepository _buildingRepository { get; set; }
+        private IMapper _mapper;
+        private IBuildingRepository _buildingRepository;
 
         public BuildingApiController(IMapper mapper, IBuildingRepository buildingRepository)
         {

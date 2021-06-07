@@ -10,9 +10,9 @@ namespace WebApplication1.Controllers.Energy
 {
     public class BuildingController : Controller
     {
-        private IUserService _userService { get; set; }
-        private IMapper _mapper { get; set; }
-        private IBuildingRepository _buildingRepository { get; set; }
+        private IMapper _mapper;
+        private IUserService _userService;
+        private IBuildingRepository _buildingRepository;
 
         public BuildingController(IMapper mapper, IUserService userService, IBuildingRepository buildingRepository)
         {
@@ -37,26 +37,11 @@ namespace WebApplication1.Controllers.Energy
         {
             return View();
         }
-        /// <summary>
-        /// Добавление дома
-        /// Адрес
-        /// Рандомная Генерация счета по электроэнергий
-        /// </summary>
-        /// <returns></returns>
 
         // P0ST: Building/AddBuilding
         [HttpPost]
         public IActionResult AddBuilding(BuildingViewModel viewModel)
         {
-            //var modelB = new Building
-            //{
-            //    Adress = new Adress { HouseNumber = 1, FloorCount = 2, Street = "gg" },
-            //    ElectricBill = new ElectricBill { Consumption = 0, TotalDebt = 0 },
-            //    District = new District { Name = DistrictName.BlueDistrict },
-            //    TotalArea = 30,
-            //};
-
-            //var modelVew = _mapper.Map<BuildingViewModel>(modelB);
 
             var model = _mapper.Map<Building>(viewModel);
 

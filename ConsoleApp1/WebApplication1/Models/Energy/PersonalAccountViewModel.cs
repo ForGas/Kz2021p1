@@ -30,6 +30,8 @@ namespace WebApplication1.Models.Energy
 
         public DateTime DateRegistration { get; set; }
 
+        public DateTime DateLastPayment { get; set; }
+
         public string SerialNumber { get; set; }
 
         public int Consumption { get; set; }
