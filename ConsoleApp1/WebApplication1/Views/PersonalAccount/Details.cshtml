@@ -1,1 +1,38 @@
-﻿Details
+﻿@using WebApplication1.EfStuff.Model.Energy
+@using WebApplication1.Models.Energy
+
+@model PersonalAccountViewModel
+
+@section Style {
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+    <link href="~/css/energy/details.css" rel="stylesheet" />
+}
+
+<section>
+    <div>
+        <h1 class="text-center text-main">Детали регистраций счета по электричеству</h1>
+
+        <div class="content">
+            <div class="details">
+                <div class="text-head fs-4 text-center">@Model.UserName детали вашего счета</div>
+                <div class="text-content fs-5">Адресс: @Model.Address</div>
+                <div class="text-content fs-5">Потребление кВт в день: @Model.Consumption</div>
+                <div class="text-content fs-5">Дата регистрации счета: @Model.DateRegistration</div>
+                <div class="text-content fs-5">Номер лицевого счета: @Model.Number</div>
+                <div class="text-content fs-5">Серийный номер вашего счетчика: @Model.SerialNumber</div>
+                <div class="text-content fs-5">Задолжность: @Model.Debt</div>
+                <div class="text-content fs-5">@Model.Rate ставка</div>
+
+                @if (@Model.Person == WebApplication1.EfStuff.Model.Energy.Person.Natural)
+                {
+                    <div class="text-content fs-5">Счет зарегистрирован на: физичекое лицо</div>
+                }
+                else
+                {
+                    <div class="text-content fs-5">Счет зарегистрирован на: юридическое лицо</div>
+                }
+            </div>
+        </div>
+    </div>
+</section>

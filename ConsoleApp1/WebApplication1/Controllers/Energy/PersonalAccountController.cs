@@ -104,25 +104,21 @@ namespace WebApplication1.Controllers.Energy
             viewModel.Number = GenerateAccountNumber();
 
             // переписать на get(address)
-            var building = _buildingRepository.GetAll().SingleOrDefault(x => x.Adress.Street == viewModel.Address);
+            var building = _buildingRepository.GetAll().FirstOrDefault(x => x.Adress.Street == viewModel.Address);
             var count = building.ElectricBill.ElectricityMeters.Count();
             viewModel.Consumption = ((building.TotalArea / 50) *
                 (250 * (count != 0 ? (count + 1) : 1)))
                 / 30;
 
 
-
+            var citizen = _userService.GetUser();
             var personalAccount = _mapper.Map<PersonalAccount>(viewModel);
 
+            citizen.PersonalAccounts.Add(personalAccount);
             building.ElectricBill.ElectricityMeters.Add(personalAccount.Meter);
 
-            _buildingRepository.Save(building);
-
-            var citizen = _userService.GetUser();
-            citizen.PersonalAccounts.Add(personalAccount);
-
             _citizenRepository.Save(citizen);
-
+            _buildingRepository.Save(building);
 
             return RedirectToAction("Details", "PersonalAccount");
         }
@@ -143,7 +139,11 @@ namespace WebApplication1.Controllers.Energy
         // GET: PersonalAccountController/Details/
         public IActionResult Details()
         {
-            return View();
+            var citizen = _userService.GetUser();
+            var account = citizen.PersonalAccounts.ElementAt(citizen.PersonalAccounts.Count - 1);
+            var viewModel = _mapper.Map<PersonalAccountViewModel>(account);
+
+            return View(viewModel);
         }
 
         // GET: PersonalAccountController/Delete/5
