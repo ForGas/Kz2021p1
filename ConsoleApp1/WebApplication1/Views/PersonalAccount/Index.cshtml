@@ -1,25 +1,64 @@
 ﻿@using WebApplication1.Models.Energy
 
-@model PersonalAccountViewModel
+@model List<PersonalAccountViewModel>
 
+@section Style {
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+    <link href="~/css/energy/personalAccount.css" rel="stylesheet" />
+}
 
-<section>
-    <p>@Model.UserName</p>
+@{
+    ViewBag.Account = Model.First();
+}
 
-    <p>Лицевой счёт @Model.Number</p>
+<section class="main">
+    <div class="main-content">
 
-    <p>Баланс лицевого счета: @Model.Debt</p>
+        <div class="user-name text-subject fs-3">
+            <span>@ViewBag.Account.UserName</span>
+        </div>
 
-    <p>Тарифный план: @Model.Rate      Адрес подключения: @Model.Address</p>
+        <div class="account fs-5">
+            @foreach (var account in Model)
+            {
+                <div class="account-link text-subject">
+                    <span>Лицевой счёт @account.Number</span>
+                </div>
+            }
+        </div>
 
-    <div>
-        <p>Сумма к оплате:</p>
+          
+        <div class="balance text-subject fs-5 ">
+            <span>Баланс лицевого счета: @ViewBag.Account.Debt</span>
+        </div>
 
-        <button>Оплатить</button>
-    </div>
+        <div class="tariff text-subject fs-5">
+            <p>Тарифный план: @ViewBag.Account.Rate
+        </div>
 
+        <div class="address text-subject fs-5">
+            <span>Адрес подключения: ул. @ViewBag.Account.Address</span>
+        </div>
 
-    <div>
-        Подать заявку на отключение счета
+        <div class="pay text-subject fs-5">
+            <span>Сумма к оплате:</span>
+            <button type="button">Оплатить</button>
+        </div>
+
+        <div class="text-subject fs-5">
+            <button type="button">Подать заявку на отключение счета</button>
+        </div>
+
     </div>
 </section>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        console.log("DOMContentLoaded");
+    });
+
+    window.addEventListener("load", function () {
+        console.log("onload");
+    });
+</script>

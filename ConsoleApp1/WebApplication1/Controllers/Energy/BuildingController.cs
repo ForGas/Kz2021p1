@@ -30,7 +30,6 @@ namespace WebApplication1.Controllers.Energy
             return View(viewModels);
         }
 
-        // перенос В Админ
         // GET: Building/AddBuilding
         [HttpGet]
         public IActionResult AddBuilding()

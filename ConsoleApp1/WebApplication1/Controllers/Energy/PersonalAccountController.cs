@@ -1,11 +1,9 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography;
 using System.Text;
 using WebApplication1.EfStuff.Model;
 using WebApplication1.EfStuff.Model.Energy;
@@ -42,15 +40,19 @@ namespace WebApplication1.Controllers.Energy
         [HttpGet]
         public IActionResult Index()
         {
-            Citizen citizen = _userService.GetUser();
-            PersonalAccount account = _accountRepository.GetCitizen(citizen.Id);
+            var citizen = _userService.GetUser();
 
-            if (account == null)
+            var accounts = _accountRepository
+                .GetAll()
+                .Where(x => x.CitizenId == citizen.Id)
+                .ToList();
+
+            if (accounts == null)
             {
                 return RedirectToAction("Registration", "PersonalAccount");
             }
 
-            var viewModel = _mapper.Map<PersonalAccountViewModel>(account);
+            var viewModel = accounts.Select(x => _mapper.Map<PersonalAccountViewModel>(x)).ToList();
 
             return View(viewModel);
         }
@@ -103,7 +105,6 @@ namespace WebApplication1.Controllers.Energy
             viewModel.DateLastPayment = DateTime.Now;
             viewModel.Number = GenerateAccountNumber();
 
-            // переписать на get(address)
             var building = _buildingRepository.GetAll().FirstOrDefault(x => x.Adress.Street == viewModel.Address);
             var count = building.ElectricBill.ElectricityMeters.Count();
             viewModel.Consumption = ((building.TotalArea / 50) *
@@ -114,11 +115,20 @@ namespace WebApplication1.Controllers.Energy
             var citizen = _userService.GetUser();
             var personalAccount = _mapper.Map<PersonalAccount>(viewModel);
 
+
+            personalAccount.Meter.ElectricBill = new ElectricBill
+            {
+                Id = building.ElectricBill.Id,
+                TotalDebt = building.ElectricBill.TotalDebt + personalAccount.Meter.Debt,
+                Consumption = building.ElectricBill.Consumption + personalAccount.Meter.Consumption
+            };
+
             citizen.PersonalAccounts.Add(personalAccount);
             building.ElectricBill.ElectricityMeters.Add(personalAccount.Meter);
 
-            _citizenRepository.Save(citizen);
+
             _buildingRepository.Save(building);
+            _citizenRepository.Save(citizen);
 
             return RedirectToAction("Details", "PersonalAccount");
         }
@@ -137,6 +147,7 @@ namespace WebApplication1.Controllers.Energy
         }
 
         // GET: PersonalAccountController/Details/
+        [Authorize]
         public IActionResult Details()
         {
             var citizen = _userService.GetUser();

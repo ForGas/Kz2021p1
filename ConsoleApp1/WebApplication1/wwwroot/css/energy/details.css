@@ -36,6 +36,13 @@
     font-weight: bold;
 }
 
+.button-link {
+    display: flex;
+    justify-content: center;
+    align-self: center;
+    margin-top: 40px;
+}
+
 .text-content {
     font-family: 'Roboto', sans-serif;
     line-height: 40px;

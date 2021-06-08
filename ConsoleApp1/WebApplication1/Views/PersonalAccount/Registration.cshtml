@@ -9,13 +9,17 @@
 }
 
 <section class="container-xxl">
-    <h1 class="text-center font-monospace text-decoration-underline">Регистрация лицевого счета по электричеству</h1>
+    <div class="text-center font-monospace">
+        <h1 class="title">Регистрация лицевого счета по электричеству</h1>
+    </div>
 
     @*form-control col-md-4*@
  
     <div class="contract">
         <div>
-            <h3 class="text-center font-monospace">Заявление на заключения договора энергоснабжения</h3>
+            <h3 class="text-center font-monospace subject-title">
+                Заявление на заключения договора энергоснабжения
+            </h3>
 
             <form action="@Url.Action("Registration", "PersonalAccount")" method="post">
 

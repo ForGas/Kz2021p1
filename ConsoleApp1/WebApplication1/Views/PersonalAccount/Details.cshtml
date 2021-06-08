@@ -34,5 +34,13 @@
                 }
             </div>
         </div>
+
+        <div class="button-link">
+            @Html.ActionLink("Перейти к счету", "Index", @ViewContext.RouteData.Values["Controller"].ToString(),
+              routeValues: null,
+              htmlAttributes: new { @class = "btn btn-primary fs-5 text-content", @role = "button" }
+            )
+        </div>
+
     </div>
 </section>
