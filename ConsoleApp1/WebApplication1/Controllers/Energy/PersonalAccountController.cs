@@ -52,6 +52,11 @@ namespace WebApplication1.Controllers.Energy
                 return RedirectToAction("Registration", "PersonalAccount");
             }
 
+            foreach (var account in accounts)
+            {
+                CalculateDebt(account);
+            }
+
             var viewModel = accounts.Select(x => _mapper.Map<PersonalAccountViewModel>(x)).ToList();
 
             return View(viewModel);
@@ -144,6 +149,38 @@ namespace WebApplication1.Controllers.Energy
             }
 
             return builder.ToString();
+        }
+
+        public void CalculateDebt(PersonalAccount account)
+        {
+            int tariffRateMin = 10;
+            int tariffRateMax = 15;
+            int tariffRate = tariffRateMin;
+            int tariffPersonNatural = 5;
+            int tariffPersonJuridical = 10;
+            int tariffPerson = tariffPersonNatural;
+            var countDayDebt = DateTime.Now - account.DateLastPayment;
+
+            if (account.Tariff.Rate == Rate.Max)
+            {
+                tariffRate = tariffRateMax;
+            }
+
+            if (account.Tariff.Person == EfStuff.Model.Energy.Person.Juridical)
+            {
+                tariffPerson = tariffPersonJuridical;
+            }
+
+            int newDebt = -1 * ((tariffRate + tariffPerson) * 
+                (account.Meter.Consumption * countDayDebt.Days));
+
+            if (account.Meter.Debt != newDebt)
+            {
+                account.Meter.Debt = newDebt;
+                account.Meter.ElectricBill.TotalDebt += account.Meter.Debt;
+
+                _accountRepository.Save(account);
+            }
         }
 
         // GET: PersonalAccountController/Details/

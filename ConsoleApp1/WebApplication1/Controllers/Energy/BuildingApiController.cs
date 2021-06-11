@@ -1,13 +1,10 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using WebApplication1.EfStuff.Model.Energy;
 using WebApplication1.EfStuff.Repositoryies.Energy.Intrefaces;
 using WebApplication1.Models.Energy;
-using WebApplication1.Services;
 
 namespace WebApplication1.Controllers.Energy
 {

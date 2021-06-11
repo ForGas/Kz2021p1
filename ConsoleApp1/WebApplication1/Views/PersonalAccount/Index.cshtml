@@ -15,50 +15,119 @@
 <section class="main">
     <div class="main-content">
 
-        <div class="user-name text-subject fs-3">
+        <div class="user-name text-subtitle fs-3">
             <span>@ViewBag.Account.UserName</span>
         </div>
 
         <div class="account fs-5">
             @foreach (var account in Model)
             {
-                <div class="account-link text-subject">
-                    <span>Лицевой счёт @account.Number</span>
-                </div>
+                if (account == Model.First())
+                {
+                    <div class="account-link text-subtitle active">
+                        <span class="accpunt-link-text">Лицевой счёт @account.Number</span>
+                    </div>
+                }
+                else
+                {
+                    <div class="account-link text-subtitle">
+                        <span class="accpunt-link-text">Лицевой счёт @account.Number</span>
+                    </div>
+                }
             }
         </div>
 
-          
-        <div class="balance text-subject fs-5 ">
-            <span>Баланс лицевого счета: @ViewBag.Account.Debt</span>
+
+        <div class="balance text-subtitle fs-5 ">
+            <span>Баланс лицевого счета:</span>
+            <div id="balance" class="fs-3">@ViewBag.Account.Debt</div>
         </div>
 
-        <div class="tariff text-subject fs-5">
-            <p>Тарифный план: @ViewBag.Account.Rate
+        <div class="tariff text-subtitle fs-5">
+            <span id="tariff">Тарифный план: @ViewBag.Account.Rate</span>
         </div>
 
-        <div class="address text-subject fs-5">
-            <span>Адрес подключения: ул. @ViewBag.Account.Address</span>
+        <div class="address text-subtitle fs-5">
+            <span id="address">Адрес подключения: ул. @ViewBag.Account.Address</span>
         </div>
 
-        <div class="pay text-subject fs-5">
+        <div class="pay text-subtitle fs-5">
             <span>Сумма к оплате:</span>
-            <button type="button">Оплатить</button>
+            <button type="button" class="btn btn-light btn-sm">Оплатить</button>
         </div>
 
-        <div class="text-subject fs-5">
-            <button type="button">Подать заявку на отключение счета</button>
+        <div class="b-apply-discon">
+            <div class="text-subtitle fs-5">
+                <button type="button" class="btn btn-danger btn-lg">Подать заявку на отключение счета</button>
+            </div>
         </div>
-
     </div>
 </section>
 
 <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        console.log("DOMContentLoaded");
-    });
+    const accountLink = document.getElementsByClassName('account-link');
+    const accpuntLinkText = document.getElementsByClassName('');
+    const url = window.location.origin;
+    var data = [];
 
-    window.addEventListener("load", function () {
-        console.log("onload");
-    });
+    Array.from(accountLink).forEach(element =>
+        element.addEventListener('click', function(e) {
+
+            Array.from(accountLink).forEach(
+                element => element.classList.remove('active'),
+            );
+
+            this.classList.add('active');
+
+            getPersonalAccount(e.target.textContent);
+        })
+    );
+
+    function getPersonalAccount(textContent) {
+
+        let accountNumber = textContent.replace(/[^\d]/g, '');
+        console.log(accountNumber);
+
+        fetch(`${url}/api/PersonalAccountApi`,
+        {
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            method: "POST",
+            body: JSON.stringify(accountNumber)
+        })
+        .then(responce => responce.ok ? responce.json() : Promise.reject(responce))
+        .then((result) => {
+            data = result;
+            console.log(data);
+            updatePersonalAccount(data);
+        })
+        .catch((result) => {
+            console.log(result);
+            console.log(result.status);
+        })
+        
+    }
+
+    function updatePersonalAccount(data) {
+        const balance = document.getElementById('balance');
+        const tariff = document.getElementById('tariff');
+        const address = document.getElementById('address');
+        const minTariff = 1;
+        const manTariff = 2;
+
+        balance.innerHTML = `${data.debt}`;
+        address.innerHTML = `Адрес подключения: ул. ${data.address}`;
+
+        if (data.rate == minTariff) {
+            tariff.innerHTML = `Тарифный план: Min`;
+        } else if (true) {
+            tariff.innerHTML = `Тарифный план: Max`;
+        } else {
+            tariff.innerHTML = `Тарифный план:`;
+        }
+
+    }
+
 </script>

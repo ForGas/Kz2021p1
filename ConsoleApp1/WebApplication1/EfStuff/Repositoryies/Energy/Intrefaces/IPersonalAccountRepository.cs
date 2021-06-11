@@ -4,6 +4,8 @@ namespace WebApplication1.EfStuff.Repositoryies.Energy.Intrefaces
 {
     public interface IPersonalAccountRepository : IBaseRepository<PersonalAccount>
     {
-        public PersonalAccount GetCitizen(long id);
+        public PersonalAccount GetByCitizenId(long id);
+
+        public PersonalAccount GetByNumber(string accountNumber);
     }
 }

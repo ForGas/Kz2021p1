@@ -8,9 +8,14 @@ namespace WebApplication1.EfStuff.Repositoryies.Energy
     {
         public PersonalAccountRepository(KzDbContext kzDbContext) : base(kzDbContext) { }
 
-        public PersonalAccount GetCitizen(long id)
+        public PersonalAccount GetByCitizenId(long id)
         {
             return _kzDbContext.PersonalAccounts.SingleOrDefault(x => x.CitizenId == id);
+        }
+
+        public PersonalAccount GetByNumber(string accountNumber)
+        {
+            return _kzDbContext.PersonalAccounts.SingleOrDefault(x => x.Number == accountNumber);
         }
     }
 }
