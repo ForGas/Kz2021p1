@@ -2,9 +2,13 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Hosting;
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
+using System.Threading.Tasks;
 using WebApplication1.EfStuff.Model;
 using WebApplication1.EfStuff.Model.Energy;
 using WebApplication1.EfStuff.Repositoryies.Energy.Intrefaces;
@@ -38,6 +42,7 @@ namespace WebApplication1.Controllers.Energy
 
         // GET: PersonalAccountController
         [HttpGet]
+        [Authorize]
         public IActionResult Index()
         {
             var citizen = _userService.GetUser();
@@ -47,15 +52,12 @@ namespace WebApplication1.Controllers.Energy
                 .Where(x => x.CitizenId == citizen.Id)
                 .ToList();
 
-            if (accounts == null)
+            if (accounts == null || accounts.Count() == 0)
             {
                 return RedirectToAction("Registration", "PersonalAccount");
             }
 
-            foreach (var account in accounts)
-            {
-                CalculateDebt(account);
-            }
+            accounts.ForEach(account => CalculateDebt(account));
 
             var viewModel = accounts.Select(x => _mapper.Map<PersonalAccountViewModel>(x)).ToList();
 
@@ -151,7 +153,7 @@ namespace WebApplication1.Controllers.Energy
             return builder.ToString();
         }
 
-        public void CalculateDebt(PersonalAccount account)
+        public PersonalAccount CalculateDebt(PersonalAccount account)
         {
             int tariffRateMin = 10;
             int tariffRateMax = 15;
@@ -171,16 +173,19 @@ namespace WebApplication1.Controllers.Energy
                 tariffPerson = tariffPersonJuridical;
             }
 
-            int newDebt = -1 * ((tariffRate + tariffPerson) * 
+            int newDebt = -1 * ((tariffRate + tariffPerson) *
                 (account.Meter.Consumption * countDayDebt.Days));
 
             if (account.Meter.Debt != newDebt)
             {
+                account.Meter.ElectricBill.TotalDebt += -1 * account.Meter.Debt;
                 account.Meter.Debt = newDebt;
                 account.Meter.ElectricBill.TotalDebt += account.Meter.Debt;
 
-                _accountRepository.Save(account);
+                _accountRepository.SaveBalance(account);
             }
+
+            return account;
         }
 
         // GET: PersonalAccountController/Details/
