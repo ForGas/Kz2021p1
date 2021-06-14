@@ -1,0 +1,38 @@
+﻿@using WebApplication1.EfStuff.Model.Energy
+@using WebApplication1.Models.Energy
+
+@model PersonalAccountViewModel
+
+@section Scripts {
+    <script src="~/js/Energy/delete.js"></script>
+}
+
+@section Style {
+    <style>
+        .content {
+            height: 100%;
+            width: 100%;
+        }  
+    </style> 
+}
+
+<section class="section-main">
+    <h2 class="text-center">
+        Удаление Лицевого счета
+    </h2>
+    
+    <div class="content">
+
+        <div>Id: @Model.Id</div>
+        <div>Number: @Model.Number</div>
+        <div>SerialNumber: @Model.SerialNumber</div>
+        <div>DateRegistration: @Model.DateRegistration</div>
+        <div>Debt: @Model.Debt</div>
+        <div>Consumption: @Model.Consumption</div>
+        <div>Address: @Model.Address</div>
+
+        <button type="button" class="btn btn-outline-danger" id="b-delete" personal-id="@Model.Id">
+            Delete
+        </button>
+    </div>
+</section>

@@ -57,6 +57,7 @@ namespace WebApplication1.EfStuff
         public DbSet<ElectricBill> ElectricBills { get; set; }
         public DbSet<District> Districts { get; set; }
         public DbSet<ElectricityMeter> ElectricityMeters { get; set; }
+        public DbSet<Tariff> Tariff { get; set; }
 
         public KzDbContext(DbContextOptions options) : base(options) { }
 
@@ -239,7 +240,9 @@ namespace WebApplication1.EfStuff
             modelBuilder.Entity<Building>()
                 .HasOne(b => b.ElectricBill)
                 .WithOne(e => e.Building)
-            .HasForeignKey<Building>(b => b.ElectricBillId);
+                .HasForeignKey<Building>(b => b.ElectricBillId)
+                .OnDelete(DeleteBehavior.Cascade)
+                .IsRequired();
 
             modelBuilder.Entity<ElectricityMeter>()
                 .HasOne(em => em.ElectricBill)
@@ -252,17 +255,21 @@ namespace WebApplication1.EfStuff
             modelBuilder.Entity<PersonalAccount>()
                .HasOne(p => p.Meter)
                .WithOne(e => e.Account)
-               .HasForeignKey<PersonalAccount>(p => p.ElectricityMeterId);
+               .HasForeignKey<PersonalAccount>(p => p.ElectricityMeterId)
+               .OnDelete(DeleteBehavior.Cascade)
+               .IsRequired();
 
             modelBuilder.Entity<PersonalAccount>()
               .HasOne(p => p.Tariff)
               .WithOne(t => t.Account)
-              .HasForeignKey<PersonalAccount>(p => p.TariffId);
+              .OnDelete(DeleteBehavior.Cascade)
+              .HasForeignKey<PersonalAccount>(p => p.TariffId)
+              .IsRequired();
+
 
             modelBuilder.Entity<PersonalAccount>()
              .HasOne(p => p.Citizen)
              .WithMany(c => c.PersonalAccounts);
-
 
             base.OnModelCreating(modelBuilder);
         }

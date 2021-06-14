@@ -12,10 +12,11 @@
     ViewBag.Account = Model.First();
 }
 
+
 <section class="main">
     <div class="main-content">
 
-        <div class="user-name text-subtitle fs-3">
+        <div class="user-name text-subtitle fs-3 mb-4">
             <span>@ViewBag.Account.UserName</span>
         </div>
 
@@ -24,110 +25,70 @@
             {
                 if (account == Model.First())
                 {
-                    <div class="account-link text-subtitle active">
-                        <span class="accpunt-link-text">Лицевой счёт @account.Number</span>
+                    <div class="account-link text-subtitle active ml-5">
+                        <span class="account-link-text">Лицевой счёт @account.Number</span>
                     </div>
                 }
                 else
                 {
-                    <div class="account-link text-subtitle">
-                        <span class="accpunt-link-text">Лицевой счёт @account.Number</span>
+                    <div class="account-link text-subtitle ml-5">
+                        <span class="account-link-text">Лицевой счёт @account.Number</span>
                     </div>
                 }
             }
         </div>
 
 
-        <div class="balance text-subtitle fs-5 ">
-            <span>Баланс лицевого счета:</span>
-            <div id="balance" class="fs-3">@ViewBag.Account.Debt</div>
+        <div class="balance text-subtitle fs-4 mb-2">
+            <span class="text-color">Баланс лицевого счета:</span>
+
+            <div class="mt-2 fs-5" id="balance-details"></div>
+
+            <div id="balance-id" class="display-4">
+                @ViewBag.Account.Debt
+            </div>
         </div>
 
-        <div class="tariff text-subtitle fs-5">
-            <span id="tariff">Тарифный план: @ViewBag.Account.Rate</span>
+        <div class="secondary-content col">
+
+            <div class="tariff text-subtitle fs-5 mb-2">
+                <span class="text-color">Тарифный план:</span>
+                <div id="tariff" class="fs-4">@ViewBag.Account.Rate</div>
+            </div>
+
+            <div class="address text-subtitle fs-5 mb-5">
+                <span class="text-color">Адрес подключения:</span>
+                <div id="address">ул. @ViewBag.Account.Address</div>
+            </div>
+
+            <div class="pay text-subtitle fs-5">
+                <span class="mb-2">Сумма к оплате:</span>
+                <div class="form-outline">
+                    <input type="text" class="form-control mb-2" maxlength="8" />
+                </div>
+                <button type="button" class="btn btn-light btn-sm">Оплатить</button>
+            </div>
         </div>
 
-        <div class="address text-subtitle fs-5">
-            <span id="address">Адрес подключения: ул. @ViewBag.Account.Address</span>
-        </div>
-
-        <div class="pay text-subtitle fs-5">
-            <span>Сумма к оплате:</span>
-            <button type="button" class="btn btn-light btn-sm">Оплатить</button>
-        </div>
-
-        <div class="b-apply-discon">
+        <div class="b-apply-discon mt-5 mb-2">
             <div class="text-subtitle fs-5">
-                <button type="button" class="btn btn-danger btn-lg">Подать заявку на отключение счета</button>
+                @Html.RouteLink("Подать заявку на отключение счета",
+                new
+                {
+                    action = "Delete",
+                    controller = ViewContext.RouteData.Values["Controller"].ToString(),
+                    accountNumber = $"{ViewBag.Account.Number}"
+                },
+                 htmlAttributes:
+                 new 
+                 { 
+                     @class = "btn btn-danger btn-lg", 
+                     @role = "button", 
+                     id = "b-delete", 
+                 });
             </div>
         </div>
     </div>
 </section>
 
-<script>
-    const accountLink = document.getElementsByClassName('account-link');
-    const accpuntLinkText = document.getElementsByClassName('');
-    const url = window.location.origin;
-    var data = [];
-
-    Array.from(accountLink).forEach(element =>
-        element.addEventListener('click', function(e) {
-
-            Array.from(accountLink).forEach(
-                element => element.classList.remove('active'),
-            );
-
-            this.classList.add('active');
-
-            getPersonalAccount(e.target.textContent);
-        })
-    );
-
-    function getPersonalAccount(textContent) {
-
-        let accountNumber = textContent.replace(/[^\d]/g, '');
-        console.log(accountNumber);
-
-        fetch(`${url}/api/PersonalAccountApi`,
-        {
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            },
-            method: "POST",
-            body: JSON.stringify(accountNumber)
-        })
-        .then(responce => responce.ok ? responce.json() : Promise.reject(responce))
-        .then((result) => {
-            data = result;
-            console.log(data);
-            updatePersonalAccount(data);
-        })
-        .catch((result) => {
-            console.log(result);
-            console.log(result.status);
-        })
-        
-    }
-
-    function updatePersonalAccount(data) {
-        const balance = document.getElementById('balance');
-        const tariff = document.getElementById('tariff');
-        const address = document.getElementById('address');
-        const minTariff = 1;
-        const manTariff = 2;
-
-        balance.innerHTML = `${data.debt}`;
-        address.innerHTML = `Адрес подключения: ул. ${data.address}`;
-
-        if (data.rate == minTariff) {
-            tariff.innerHTML = `Тарифный план: Min`;
-        } else if (true) {
-            tariff.innerHTML = `Тарифный план: Max`;
-        } else {
-            tariff.innerHTML = `Тарифный план:`;
-        }
-
-    }
-
-</script>
+<script src="~/js/Energy/personalAccount.js"></script>

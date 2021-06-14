@@ -27,7 +27,9 @@ namespace WebApplication1.Profiles
                 .ForMember(x => x.DateRegistration, opt => opt.MapFrom(p => p.DateRegistration))
                 .ForMember(x => x.DateLastPayment, opt => opt.MapFrom(p => p.DateLastPayment))
                 .ForMember(x => x.Consumption, opt => opt.MapFrom(p => p.Meter.Consumption))
-                .ForMember(x => x.Address, opt => opt.MapFrom(p => p.Meter.ElectricBill.Building.Adress.Street))
+                .ForMember(x => x.Address, opt => opt.MapFrom(p => string.Format("{0} {1}",
+                    p.Meter.ElectricBill.Building.Adress.Street,
+                    p.Meter.ElectricBill.Building.Adress.HouseNumber)))
                 .ReverseMap()
                 .ForMember(x => x.Id, opt => opt.MapFrom(p => p.Id))
                 .ForMember(x => x.Number, opt => opt.MapFrom(p => p.Number))

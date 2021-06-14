@@ -2,18 +2,11 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Hosting;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using WebApplication1.EfStuff.Model;
-using WebApplication1.EfStuff.Model.Energy;
 using WebApplication1.EfStuff.Repositoryies.Energy.Intrefaces;
 using WebApplication1.EfStuff.Repositoryies.Interface;
 using WebApplication1.Models.Energy;
+using WebApplication1.Presentation.Energy;
 using WebApplication1.Services;
 
 namespace WebApplication1.Controllers.Energy
@@ -22,22 +15,27 @@ namespace WebApplication1.Controllers.Energy
     {
         private IMapper _mapper;
         private IUserService _userService;
-        private IAdressRepository _adressRepository;
         private ICitizenRepository _citizenRepository;
         private IBuildingRepository _buildingRepository;
         private IPersonalAccountRepository _accountRepository;
+        private IPersonalAccountPresentation _accountPresentation;
+        private IElectricityMeterRepository _meterRepository;
+        private ITariffRepository _tariffRepository;
 
-        public PersonalAccountController(IAdressRepository adressRepository,
-            IPersonalAccountRepository accountRepository, IMapper mapper,
-            IUserService userService, IBuildingRepository buildingRepository,
-            ICitizenRepository citizenRepository)
+        public PersonalAccountController(IPersonalAccountRepository accountRepository,
+            IMapper mapper, IUserService userService,
+            IBuildingRepository buildingRepository, ICitizenRepository citizenRepository,
+            IPersonalAccountPresentation accountPresentation, IElectricityMeterRepository meterRepository,
+            ITariffRepository tariffRepository)
         {
-            _adressRepository = adressRepository;
-            _accountRepository = accountRepository;
             _mapper = mapper;
             _userService = userService;
-            _buildingRepository = buildingRepository;
             _citizenRepository = citizenRepository;
+            _accountRepository = accountRepository;
+            _buildingRepository = buildingRepository;
+            _accountPresentation = accountPresentation;
+            _meterRepository = meterRepository;
+            _tariffRepository = tariffRepository;
         }
 
         // GET: PersonalAccountController
@@ -47,59 +45,28 @@ namespace WebApplication1.Controllers.Energy
         {
             var citizen = _userService.GetUser();
 
-            var accounts = _accountRepository
-                .GetAll()
-                .Where(x => x.CitizenId == citizen.Id)
-                .ToList();
+            var accounts = _accountPresentation.GetAllOwnAccounts();
 
             if (accounts == null || accounts.Count() == 0)
             {
                 return RedirectToAction("Registration", "PersonalAccount");
             }
 
-            accounts.ForEach(account => CalculateDebt(account));
+            accounts.ForEach(account => _accountPresentation.CalculateDebt(account));
 
-            var viewModel = accounts.Select(x => _mapper.Map<PersonalAccountViewModel>(x)).ToList();
+            var viewModel = _accountPresentation.GetViewModels(accounts);
 
             return View(viewModel);
         }
 
         // GET: PersonalAccountController/Registration
         [HttpGet]
+        [Authorize]
         public IActionResult Registration()
         {
-            Citizen citizen = _userService.GetUser();
-            if (citizen == null)
-            {
-                return RedirectToAction("Login", "Citizen");
-            }
-
-            var viewModel = new PersonalAccountViewModel
-            {
-                CitizenId = citizen.Id,
-                UserName = citizen.Name,
-                DateRegistration = DateTime.Now,
-                SerialNumber = GenerateSerialNumber()
-
-            };
+            var viewModel = _accountPresentation.CreateBaseViewModel();
 
             return View(viewModel);
-        }
-
-
-        public string GenerateSerialNumber()
-        {
-            Random random = new Random();
-            StringBuilder builder = new StringBuilder(9);
-
-            builder.Append("№");
-
-            for (int i = 0; i < 8; i++)
-            {
-                builder.Append(random.Next(10));
-            }
-
-            return builder.ToString();
         }
 
 
@@ -107,116 +74,61 @@ namespace WebApplication1.Controllers.Energy
         [HttpPost]
         public IActionResult Registration(PersonalAccountViewModel viewModel)
         {
+            _accountPresentation.InizializeAccount(viewModel);
 
-            viewModel.Debt = 0;
-            viewModel.DateLastPayment = DateTime.Now;
-            viewModel.Number = GenerateAccountNumber();
+            var building = _accountPresentation.GetBuildingByAddress(viewModel.Address);
 
-            var building = _buildingRepository.GetAll().FirstOrDefault(x => x.Adress.Street == viewModel.Address);
-            var count = building.ElectricBill.ElectricityMeters.Count();
-            viewModel.Consumption = ((building.TotalArea / 50) *
-                (250 * (count != 0 ? (count + 1) : 1)))
-                / 30;
+            viewModel.Consumption = _accountPresentation.GetCalculateConsumption(building);
 
-
-            var citizen = _userService.GetUser();
-            var personalAccount = _mapper.Map<PersonalAccount>(viewModel);
-
-
-            personalAccount.Meter.ElectricBill = new ElectricBill
-            {
-                Id = building.ElectricBill.Id,
-                TotalDebt = building.ElectricBill.TotalDebt + personalAccount.Meter.Debt,
-                Consumption = building.ElectricBill.Consumption + personalAccount.Meter.Consumption
-            };
-
-            citizen.PersonalAccounts.Add(personalAccount);
-            building.ElectricBill.ElectricityMeters.Add(personalAccount.Meter);
-
-
-            _buildingRepository.Save(building);
-            _citizenRepository.Save(citizen);
+            _accountPresentation.RegisterAccount(viewModel, building);
 
             return RedirectToAction("Details", "PersonalAccount");
-        }
-
-        public string GenerateAccountNumber()
-        {
-            Random random = new Random();
-            StringBuilder builder = new StringBuilder(8);
-
-            for (int i = 0; i < 7; i++)
-            {
-                builder.Append(random.Next(10));
-            }
-
-            return builder.ToString();
-        }
-
-        public PersonalAccount CalculateDebt(PersonalAccount account)
-        {
-            int tariffRateMin = 10;
-            int tariffRateMax = 15;
-            int tariffRate = tariffRateMin;
-            int tariffPersonNatural = 5;
-            int tariffPersonJuridical = 10;
-            int tariffPerson = tariffPersonNatural;
-            var countDayDebt = DateTime.Now - account.DateLastPayment;
-
-            if (account.Tariff.Rate == Rate.Max)
-            {
-                tariffRate = tariffRateMax;
-            }
-
-            if (account.Tariff.Person == EfStuff.Model.Energy.Person.Juridical)
-            {
-                tariffPerson = tariffPersonJuridical;
-            }
-
-            int newDebt = -1 * ((tariffRate + tariffPerson) *
-                (account.Meter.Consumption * countDayDebt.Days));
-
-            if (account.Meter.Debt != newDebt)
-            {
-                account.Meter.ElectricBill.TotalDebt += -1 * account.Meter.Debt;
-                account.Meter.Debt = newDebt;
-                account.Meter.ElectricBill.TotalDebt += account.Meter.Debt;
-
-                _accountRepository.SaveBalance(account);
-            }
-
-            return account;
         }
 
         // GET: PersonalAccountController/Details/
         [Authorize]
         public IActionResult Details()
         {
-            var citizen = _userService.GetUser();
-            var account = citizen.PersonalAccounts.ElementAt(citizen.PersonalAccounts.Count - 1);
-            var viewModel = _mapper.Map<PersonalAccountViewModel>(account);
+            var viewModel = _accountPresentation.GetNewAccountDetails();
 
             return View(viewModel);
         }
 
         // GET: PersonalAccountController/Delete/5
-        public IActionResult Delete(int id)
+        public IActionResult Delete(string accountNumber)
         {
-            return View();
+            var account = _accountRepository.GetByNumber(accountNumber);
+
+            var viewModel = _mapper.Map<PersonalAccountViewModel>(account);
+
+            return View(viewModel);
         }
 
         // POST: PersonalAccountController/Delete/5
         [HttpPost]
-        public IActionResult Delete(int id, IFormCollection collection)
+        public JsonResult Delete(long id)
         {
-            try
+            var account = _accountRepository.Get(id);
+
+            if (account == null)
             {
-                return RedirectToAction(nameof(Index));
+                return Json(false);
             }
-            catch
-            {
-                return View();
-            }
+
+            var citizen = account.Citizen;
+            var building = account.Meter.ElectricBill.Building;
+
+            citizen.PersonalAccounts.Remove(account);
+            building.ElectricBill.ElectricityMeters.Remove(account.Meter);
+
+            _accountRepository.Remove(account);
+            _meterRepository.Remove(account.Meter);
+            _tariffRepository.DeleteById(account.TariffId);
+
+            _citizenRepository.Save(citizen);
+            _buildingRepository.Save(building);
+
+            return Json(true);
         }
     }
 }

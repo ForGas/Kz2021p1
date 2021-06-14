@@ -15,6 +15,7 @@ using WebApplication1.EfStuff.Model.Energy;
 using WebApplication1.EfStuff.Model.Firemen;
 using WebApplication1.EfStuff.Model.Television;
 using WebApplication1.EfStuff.Repositoryies;
+using WebApplication1.EfStuff.Repositoryies.Energy.Intrefaces;
 using WebApplication1.EfStuff.Repositoryies.Interface;
 using WebApplication1.EfStuff.Repositoryies.Television;
 using WebApplication1.Extensions;
@@ -25,6 +26,7 @@ using WebApplication1.Models.FiremanModels;
 using WebApplication1.Models.Television;
 using WebApplication1.Presentation;
 using WebApplication1.Presentation.Airport;
+using WebApplication1.Presentation.Energy;
 using WebApplication1.Presentation.FirePresentation;
 using WebApplication1.Presentation.Television;
 using WebApplication1.Profiles;
@@ -81,7 +83,6 @@ namespace WebApplication1
             services.AddScoped<IBusRepository, BusRepository>();
             services.AddScoped<IOrderRepository, OrderRepository>();
             services.AddScoped<ITripRouteRepository, TripRouteRepository>();
-
 
             services.AddScoped<HCEstablishmentsPresentation>(x =>
                 new HCEstablishmentsPresentation(
@@ -148,6 +149,16 @@ namespace WebApplication1
             services.AddScoped<IFiremanPresentation, FiremanPresentation>();
             services.AddScoped<IFireTruckPresentation, FireTruckPresentation>();
             services.AddScoped<IFiremanTeamPresentation, FiremanTeamPresentation>();
+
+            services.AddScoped<PersonalAccountPresentation>(x =>
+                new PersonalAccountPresentation( 
+                    x.GetService<IMapper>(),
+                    x.GetService<IUserService>(),
+                    x.GetService<ICitizenRepository>(),
+                    x.GetService<IPersonalAccountRepository>(),
+                    x.GetService<IBuildingRepository>()));
+
+            services.AddScoped<IPersonalAccountPresentation, PersonalAccountPresentation>();
 
             RegisterAutoMapper(services);
 

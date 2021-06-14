@@ -37,7 +37,7 @@
                 <p class="fs-5 fw-light font-monospace">
                     На объект расположенный по адресу
                     @Html.DropDownListFor(x => x.Address,
-                       new SelectList(repository.GetAll().Select(x => x.Adress.Street)),
+                       new SelectList(repository.GetAll().Select(x => string.Format("{0} {1}", x.Adress.Street, x.Adress.HouseNumber))),
                        new { @class = "btn btn-default dropdown-toggle fs-5 font-monospace" })
                 </p>
                 <p class="fs-5 fw-light font-monospace">
