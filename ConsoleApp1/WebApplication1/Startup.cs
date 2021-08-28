@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using System.Linq;
 using System.Reflection;
 using WebApplication1.EfStuff;
@@ -59,7 +60,10 @@ namespace WebApplication1
                 new BlobServiceClient(Configuration.GetValue<string>("AzureBlobStorageConnectionString")));
 
             var connectionString = Configuration.GetValue<string>("SpecialConnectionStrings");
-            services.AddDbContext<KzDbContext>(option => option.UseSqlServer(connectionString));
+            services.AddDbContext<KzDbContext>(option => {
+                option.UseSqlServer(connectionString);
+                option.EnableSensitiveDataLogging(true);
+            });
 
             RegisterRepositories(services);
             services.AddPoliceServices(Configuration);

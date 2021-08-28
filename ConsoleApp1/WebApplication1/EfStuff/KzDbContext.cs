@@ -1,10 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using WebApplication1.EfStuff.Model;
-using WebApplication1.Models;
 using WebApplication1.EfStuff.Model.Firemen;
 using WebApplication1.EfStuff.Model.Airport;
 using WebApplication1.EfStuff.Model.Television;
@@ -259,12 +254,12 @@ namespace WebApplication1.EfStuff
                .OnDelete(DeleteBehavior.Cascade)
                .IsRequired();
 
-            modelBuilder.Entity<PersonalAccount>()
-              .HasOne(p => p.Tariff)
-              .WithOne(t => t.Account)
-              .OnDelete(DeleteBehavior.Cascade)
-              .HasForeignKey<PersonalAccount>(p => p.TariffId)
-              .IsRequired();
+            modelBuilder.Entity<Tariff>()
+                .HasOne(t => t.Account)
+                .WithOne(p => p.Tariff)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasForeignKey<PersonalAccount>(p => p.TariffId)
+                .IsRequired();
 
 
             modelBuilder.Entity<PersonalAccount>()
