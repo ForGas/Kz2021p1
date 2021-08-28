@@ -1,3 +1,4 @@
+## ~ConsoleApp1/WebApplication1 - __Проект__ от курса
 ### __Энергия__. :white_check_mark:
 - __Формирование__ зданий в __группы__ по районам. :white_check_mark:
 - __Считывание__ количество нужной __энергии__. :white_check_mark:
